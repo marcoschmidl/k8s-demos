@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hallo-welt
+  namespace: projekt1
+  annotations: 
+    author: ms <marcoschmidl@pm.me>
+spec:
+  selector:
+    matchLabels: # hier wählen wir aus dass das deployment zum Deployment gehört
+      app: hallo-welt
+        #replicas: 1 # wie viele pods sollen erstellt werden
+  template:
+    metadata:
+      labels:
+        app: hallo-welt
+      annotations:
+            author: ms <marcoschmidl@pm.me>
+    spec:
+      containers:
+        - name: hallo-welt #style: pod genauso nenne wie deployment
+          image: goloroden/hello-world:latest
+            # command:
+            #- sleep
+            #  - "3600"
+          ports:
+            - name: http
+              containerPort: 3000
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1024Mi"
