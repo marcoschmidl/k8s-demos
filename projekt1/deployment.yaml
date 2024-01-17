@@ -1,33 +1,92 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hallo-welt
   namespace: projekt1
-  annotations: 
+  annotations:
     author: ms <marcoschmidl@pm.me>
 spec:
   selector:
-    matchLabels: # hier wählen wir aus dass das deployment zum Deployment gehört
+    matchLabels:
       app: hallo-welt
-        #replicas: 1 # wie viele pods sollen erstellt werden
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
         app: hallo-welt
       annotations:
-            author: ms <marcoschmidl@pm.me>
+        author: ms <marcoschmidl@pm.me>
     spec:
       containers:
-        - name: hallo-welt #style: pod genauso nenne wie deployment
+        - name: hallo-welt
           image: goloroden/hello-world:latest
-            # command:
-            #- sleep
-            #  - "3600"
           ports:
-            - name: http
-              containerPort: 3000
+           - name: http
+             containerPort: 3000
+             protocol: TCP
           resources:
+            requests:
+              cpu: "1000m"
+              memory: "256Mi"
             limits:
-              cpu: "1"
-              memory: "1024Mi"
+              cpu: "1500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /hallo-welt
+              port: http
+            initialDelaySeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /hallo-welt
+              port: http
+            initialDelaySeconds: 10
+        #  imagePullSecrets:
+        #  - name: docker-hub
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hallo-welt
+  namespace: projekt1
+  annotations:
+    author: ms <marcoschmidl@pm.me>
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  type: LoadBalancer # oder ClusterIP
+  selector:
+    app: hallo-welt
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hallo-welt
+  namespace: projekt1
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - backend:
+              service:
+                name: hallo-welt
+                port:
+                  number: 3000
+            path: /hallo-welt
+            pathType: Prefix
+  tls:
+    - {}
+
