@@ -65,7 +65,7 @@ spec:
   ipFamilies:
     - IPv4
   ipFamilyPolicy: SingleStack
-  type: LoadBalancer # oder ClusterIP
+  type: LoadBalancer # or ClusterIP
   selector:
     app: hallo-welt
 ---

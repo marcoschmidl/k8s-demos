@@ -10,7 +10,7 @@ metadata:
 
 ---
 apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy #Plugin nötig
+kind: NetworkPolicy #Plugin needed
 metadata:
   name: allow-for-system-namespaces
   namespace: projekt1
