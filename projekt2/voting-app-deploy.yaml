@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-app-deploy
+  labels:
+    name: voting-app-deploy
+    app: demo-voting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels: # Hier stehen die Labels aus der Pod Definition
+      name: voting-app-pod
+      app: demo-voting-app
+  template:
+    metadata:
+      labels:
+        name: voting-app-pod
+        app: demo-voting-app
+    spec:
+      containers:
+        - name: voting-app
+          image: kodekloud/examplevotingapp_vote:v1
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voting-service
+  labels:
+    name: voting-service
+    app: demo-voting-app
+spec:
+  type: NodePort
+  selector:
+    app: demo-voting-app
+    name: voting-app-pod
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30004 # <--- Add this line Für den NodePort wird eine Spezielle Portnummer vergeben.
