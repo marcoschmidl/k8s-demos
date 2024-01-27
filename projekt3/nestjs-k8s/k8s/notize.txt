@@ -1,0 +1,7 @@
+hier ist das Problem, das der Login nicht funktioniert.
+
+2 Möglichkeiten:
+nerdctl funktionalität um Images local zu benutzen
+
+docker build und login -> möglicherweißen passt das mit dem Rancher Cluster aber nicht
+dafür könnte ein Login Script nötig sein.
